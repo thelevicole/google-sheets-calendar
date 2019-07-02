@@ -8,6 +8,7 @@ Generates a spreadsheet divided by months and days, like this:
 ## Usage
 
 While in Google Sheets go to `Tools > Script editor`. Once in the script editor do the following.
+
 1. Copy and paste the contents of `dist/script.js` into the editor.
 2. Create a basic function for the editor to call. See example below.
 3. Select your function from the "Select function" menu.
@@ -24,6 +25,9 @@ function run() {
 ```
 
 ### Options
+
+Below are all the available options with their default values.
+
 ```javascript
 new Calendar( {
 	sheet: 0, // Number or name of sheet to the calendar
@@ -46,3 +50,7 @@ new Calendar( {
 	}
 } );
 ```
+
+## Todo
+
+Turn this into its own add-on with a simple to use interface.
