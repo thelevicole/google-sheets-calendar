@@ -8,11 +8,11 @@ function Calendar( options ) {
 	 * @param	{Object}	out
 	 * @return	{Object}
 	 */
-	const deepExtend = function( out ) {
+	var deepExtend = function( out ) {
 		out = out || {};
 
-		for ( let i = 1; i < arguments.length; i++ ) {
-			const obj = arguments[ i ];
+		for ( var i = 1; i < arguments.length; i++ ) {
+			var obj = arguments[ i ];
 
 			if ( !obj ) {
 				continue;
@@ -41,7 +41,7 @@ function Calendar( options ) {
 	 * @param	{Integer}	fallback [description]
 	 * @return	{Integer}
 	 */
-	const validateInt = ( val, fallback ) => {
+	var validateInt = function( val, fallback ) {
 		return !isNaN( parseInt( val ) ) ? parseInt( val ) : fallback;
 	};
 
@@ -52,9 +52,22 @@ function Calendar( options ) {
 	 * 
 	 * @return	{Object}	Specific sheet
 	 */
-	const getSheet = () => {
+	var getSheet = function() {
 		var activeDocument = SpreadsheetApp.getActiveSpreadsheet();
-		return activeDocument.getSheets()[ validateInt( options.sheet, 0 ) ];
+		var allSheets = activeDocument.getSheets();
+
+		if ( validateInt( options.sheet, false ) !== false ) {
+			return allSheets[ validateInt( options.sheet, 0 ) ];
+		} else {
+			for ( var i = 0; i < allSheets.length; i++ ) {
+				if ( allSheets[ i ].getName() === options.sheet ) {
+					return allSheets[ i ];
+				}
+			}
+		}
+
+		// Fallback to active sheet
+		return activeDocument.getActiveSheet();
 	};
 
 	/**
@@ -65,8 +78,8 @@ function Calendar( options ) {
 	 * @param	{Integer}	year
 	 * @return	{Integer}
 	 */
-	const getDaysInYear = function( year ) {
-		const isLeap = year % 400 === 0 || ( year % 100 !== 0 && year % 4 === 0 );
+	var getDaysInYear = function( year ) {
+		var isLeap = year % 400 === 0 || ( year % 100 !== 0 && year % 4 === 0 );
 		return isLeap ? 366 : 365;
 	};
 
@@ -79,7 +92,7 @@ function Calendar( options ) {
 	 * @param	{Integer}	year
 	 * @return	{Array}				Returns array of date objects
 	 */
-	const getDaysInMonth = function( month, year ) {
+	var getDaysInMonth = function( month, year ) {
 		var date = new Date( year, month, 1 );
 		var days = [];
 
@@ -101,7 +114,7 @@ function Calendar( options ) {
 	 * @param	{Integer}	mergeTotal
 	 * @return	{Object}
 	 */
-	const horizontalMerge = function( row, col, mergeTotal ) {
+	var horizontalMerge = function( row, col, mergeTotal ) {
 		
 		getSheet()
 			// row, col, rows, cols		
@@ -123,9 +136,9 @@ function Calendar( options ) {
 	 * @param	{Number}	number
 	 * @return	{String}
 	 */
-	const suffixNumber = ( number ) => {
-		let suffix = 'th';
-		const remainder = number % 10;
+	var suffixNumber = function( number ) {
+		var suffix = 'th';
+		var remainder = number % 10;
 
 		if ( number > 3 && number < 21 ) {
 			suffix = 'th'; 
@@ -148,7 +161,7 @@ function Calendar( options ) {
 	 * @type {Object}
 	 */
 	options = deepExtend( {}, {
-		sheet: 0,
+		sheet: null,
 		year: ( new Date() ).getFullYear(),
 		verticalFill: 60,
 		monthColors: {

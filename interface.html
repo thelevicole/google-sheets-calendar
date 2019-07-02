@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<base target="_top">
+	<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+</head>
+<body>
+
+	<form>
+		<? if ( data.sheets.length > 1 ) { ?>
+			<div class="form-group block">
+				<label for="sheet">Select sheet</label>
+				<select class="block" name="sheet" id="sheet">
+					<? for ( var i = 0; i < data.sheets.length; i++ ) { ?>
+						<? if ( data.currentSheet.getSheetId() === data.sheets[ i ].getSheetId() ) { ?>
+							<option value="<?= data.sheets[ i ].getName(); ?>" selected><?= data.sheets[ i ].getName(); ?></option>
+						<? } else { ?>
+							<option value="<?= data.sheets[ i ].getName(); ?>"><?= data.sheets[ i ].getName(); ?></option>
+						<? } ?>
+					<? } ?>
+				</select>
+			</div>
+		<? } ?>
+
+		<div class="form-group block">
+			<label for="year">Year</label>
+			<input type="number" name="year" id="year" minlength="4" maxlength="4" pattern="[0-9]{4}" value="<?= ( new Date() ).getFullYear(); ?>">
+		</div>
+
+		<div class="form-group block">
+			<label for="verticalFill">Vertical Fill</label>
+			<input type="number" name="monthColors[verticalFill]" id="verticalFill" minlength="1" maxlength="999" pattern="[0-9]{1,999}" value="60">
+		</div>
+
+		<hr>
+
+		<div class="form-group inline">
+			<label for="monthColors.odd">Month Odd</label>
+			<input type="color" name="monthColors[odd]" id="monthColors.odd" value="#eeeeee">
+		</div>
+		<div class="form-group inline">
+			<label for="monthColors.even">Month Even</label>
+			<input type="color" name="monthColors[even]" id="monthColors.even" value="#ffffff">
+		</div>
+		<div class="form-group inline">
+			<label for="monthColors.border">Month Divider</label>
+			<input type="color" name="monthColors[border]" id="monthColors.border" value="#333333">
+		</div>
+
+		<hr>
+
+		<div class="form-group inline">
+			<label for="dayColors.weekend">Weekend Color</label>
+			<input type="color" name="dayColors[weekend]" id="dayColors.weekend" value="#eeeeee">
+		</div>
+		<div class="form-group inline">
+			<label for="dayColors.weekday">Weekday Color</label>
+			<input type="color" name="dayColors[weekday]" id="dayColors.weekday" value="#ffffff">
+		</div>
+
+		<hr>
+
+		<div class="block">
+			<button class="blue" type="submit">Generate</button>
+		</div>
+	</form>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+	<script>
+		( function( $ ) {
+			'use strict';
+
+			$( 'form' ).on( 'submit', function() {
+
+				var $loading = $( '<div>', {
+					html: '<span>Loading...</span>'
+				} ).css( {
+					'position': 'fixed',
+					'z-index': 9999,
+					'top': 0,
+					'left': 0,
+					'bottom': 0,
+					'right': 0,
+					'background-color': 'rgba(0,0,0,0.7)',
+					'color': '#fff',
+					'display': 'flex',
+					'justify-content': 'center',
+					'align-items': 'center'
+				} ).appendTo( $( 'body' ) );
+
+				var values = $( this ).serializeArray();
+
+				let query = {};
+
+				for ( let i = 0; i < values.length; i++ ) {
+					var field = values[ i ];
+					var matches = field.name.match( /([a-z]{1,})\[([a-z]{1,})\]/i );
+
+					if ( $( '[name="' + field.name + '"]' ).length ) {
+						if ( $( '[name="' + field.name + '"]' ).prop( 'type' ) === 'number' ) {
+							field.value = parseInt( field.value );
+						}
+					}
+
+					if ( matches ) {
+						var group = matches[ 1 ];
+						var key = matches[ 2 ];
+						
+						if ( group && key ) {
+							if ( typeof query[ group ] === 'undefined' ) {
+								query[ group ] = {};
+							}
+
+							query[ group ][ key ] = field.value;
+						}
+					} else {
+						query[ field.name ] = field.value;
+					}
+
+				}
+
+				google.script.run.withSuccessHandler( function() {
+					$loading.remove();
+				} ).genrateCalendar( query );
+
+				return false;
+			} );
+
+		} )( jQuery );
+	</script>
+</body>
+</html>
