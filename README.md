@@ -3,6 +3,7 @@
 Generates a spreadsheet divided by months and days, like this:
 
 ![Example spreadsheet](https://i.imgur.com/4c5hJYX.png)
+[View example here](https://docs.google.com/spreadsheets/d/12aCPyi9v5EyFGKHUkTyeSV41u0wSPEXex6xkFxxVoII/edit)
 
 ## Usage
 
